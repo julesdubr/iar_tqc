@@ -1,0 +1,16 @@
+common:
+  policy: "MlpPolicy"
+  learning_rate: !!float 3e-4
+  gamma: 0.99
+  tau: 0.005
+  buffer_size: !!int 1e6
+  activation_fn: "torch.nn.ReLU"
+
+tqc:
+  n_critics: 5
+  n_quantiles: 25
+  net_arch: "dict(pi=[256, 256], qf=[512, 512, 512])"
+
+sac:
+  n_critics: 2
+  net_arch: "dict(pi=[256, 256], qf=[256, 256])"
