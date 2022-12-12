@@ -9,7 +9,7 @@ from stable_baselines3.common.utils import set_random_seed
 from utils.utils import ALGOS, get_latest_run_id, read_hyperparameters, make_env
 
 
-def main(args, tensorboard_log, save_path, verbose):
+def train(args, tensorboard_log, save_path, verbose):
     # Setup environments
     env = make_env(args.env, args.seed)
     eval_env = make_env(args.env, args.seed, eval_env=True)
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     algo = args.algo.upper()
     save_path = os.path.join(log_dir, f"{algo}_{get_latest_run_id(log_dir, algo) + 1}")
 
-    main(args, tensorboard_log, save_path, args.verbose)
+    train(args, tensorboard_log, save_path, args.verbose)
