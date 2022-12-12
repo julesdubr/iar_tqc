@@ -18,6 +18,7 @@ tqc:
 sac:
   policy_kwargs:
     n_critics: 2
+    net_arch:
       pi: [256, 256]
       qf: [256, 256]
 
