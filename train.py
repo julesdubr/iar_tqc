@@ -1,12 +1,12 @@
-import torch
 import gym
+import numpy as np
 
 import argparse
 import os
 import yaml
 
 from stable_baselines3.common.callbacks import EvalCallback
-from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.utils import set_random_seed
 
 from utils.wrappers import RescaleAction
 from utils.utils import ALGOS, get_latest_run_id
@@ -15,7 +15,12 @@ from utils.utils import ALGOS, get_latest_run_id
 def main(args, tensorboard_log, save_path, verbose):
     # Setup environments
     env = gym.make(args.env)
-    eval_env = Monitor(gym.make(args.env))
+    env.seed(args.seed)
+    env.action_space.seed(args.seed)
+
+    eval_env = gym.make(args.env)
+    eval_env.seed(args.seed)
+    eval_env.action_space.seed(args.seed)
 
     env = RescaleAction(env, -1.0, 1.0)
     eval_env = RescaleAction(eval_env, -1.0, 1.0)
@@ -26,6 +31,7 @@ def main(args, tensorboard_log, save_path, verbose):
     model = ALGOS[args.algo](
         env=env,
         tensorboard_log=tensorboard_log,
+        seed=args.seed,
         verbose=verbose,
         **hyperparams,
     )
@@ -61,14 +67,23 @@ def read_hyperparameters(algo, env):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--algo", default="tqc", choices=list(ALGOS.keys()))
-    parser.add_argument("--env", default="Hopper-v3")
+    parser.add_argument("--env", default="Hopper-v3", type=str)
     parser.add_argument("--eval-freq", default=1e3, type=int)
     parser.add_argument("-n", "--n-timesteps", default=1e5, type=int)
-    parser.add_argument("-f", "--log-dir", default="logs")
-    parser.add_argument("-tb", "--tensorboard-log", default="logs")
+    parser.add_argument("-f", "--log-dir", default="logs", type=str)
+    parser.add_argument("-tb", "--tensorboard-log", default="logs", type=str)
+    parser.add_argument("--seed", default=-1, type=int)
     parser.add_argument("--verbose", default=0, type=int)
     args = parser.parse_args()
 
+    # Seed
+    if args.seed < 0:
+        args.seed = np.random.randint(2**32 - 1, dtype="int64").item()
+
+    set_random_seed(args.seed)
+    print(f"Seed: {args.seed}")
+
+    # Logging
     tensorboard_log = os.path.join(args.tensorboard_log, args.env)
 
     log_dir = f"{args.log_dir}/{args.env}"
