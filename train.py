@@ -1,29 +1,18 @@
-import gym
 import numpy as np
 
 import argparse
 import os
-import yaml
 
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.utils import set_random_seed
 
-from utils.wrappers import RescaleAction
-from utils.utils import ALGOS, get_latest_run_id
+from utils.utils import ALGOS, get_latest_run_id, read_hyperparameters, make_env
 
 
 def main(args, tensorboard_log, save_path, verbose):
     # Setup environments
-    env = gym.make(args.env)
-    env.seed(args.seed)
-    env.action_space.seed(args.seed)
-
-    eval_env = gym.make(args.env)
-    eval_env.seed(args.seed)
-    eval_env.action_space.seed(args.seed)
-
-    env = RescaleAction(env, -1.0, 1.0)
-    eval_env = RescaleAction(eval_env, -1.0, 1.0)
+    env = make_env(args.env, args.seed)
+    eval_env = make_env(args.env, args.seed, eval_env=True)
 
     # Setup model
     hyperparams = read_hyperparameters(args.algo, args.env)
@@ -52,16 +41,6 @@ def main(args, tensorboard_log, save_path, verbose):
     # Save the model
     print(f"Saving to {save_path}")
     model.save(f"{save_path}/{args.env}")
-
-
-def read_hyperparameters(algo, env):
-    with open("hyperparams.yml", "r") as f:
-        hyperparams_dict = yaml.safe_load(f)
-        hyperparams = hyperparams_dict["common"]
-        hyperparams.update(hyperparams_dict[algo])
-        hyperparams.update(hyperparams_dict[env])
-
-    return hyperparams
 
 
 if __name__ == "__main__":
