@@ -10,14 +10,6 @@ ALGOS = {
     "tqc": TQC,
 }
 
-N_QUANTILES_TO_DROP = {
-    "Hopper-v3": 5,
-    "HalfCheetah-v3": 0,
-    "Walker2d-v3": 2,
-    "Ant-v3": 2,
-    "Humanoid-v3": 2,
-}
-
 
 def get_latest_run_id(log_path: str, algo: str) -> int:
     """
