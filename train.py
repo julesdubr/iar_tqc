@@ -6,7 +6,7 @@ import os
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.utils import set_random_seed
 
-from utils.utils import ALGOS, get_latest_run_id, read_hyperparameters, make_env
+from utils.utils import ALGOS, get_run_id, read_hyperparameters, make_env
 
 
 def train(args, tensorboard_log, save_path, verbose):
@@ -67,6 +67,6 @@ if __name__ == "__main__":
 
     log_dir = f"{args.log_dir}/{args.env}"
     algo = args.algo.upper()
-    save_path = os.path.join(log_dir, f"{algo}_{get_latest_run_id(log_dir, algo) + 1}")
+    save_path = os.path.join(log_dir, f"{algo}_{get_run_id(log_dir, algo)}")
 
     train(args, tensorboard_log, save_path, args.verbose)

@@ -11,22 +11,10 @@ from stable_baselines3.common.monitor import Monitor
 from utils.wrappers import RescaleAction
 
 
-ALGOS = {
-    "ppo": PPO,
-    "sac": SAC,
-    "tqc": TQC,
-}
+ALGOS = {"sac": SAC, "tqc": TQC}
 
 
-def get_latest_run_id(log_path: str, algo: str) -> int:
-    """
-    Returns the latest run number for the given log name and log path,
-    by finding the greatest number in the directories.
-
-    :param log_path: path to log folder
-    :param env_id:
-    :return: latest run number
-    """
+def get_run_id(log_path: str, algo: str) -> int:
     max_run_id = 0
     for path in glob.glob(os.path.join(log_path, algo + "_[0-9]*")):
         file_name = os.path.basename(path)
@@ -37,7 +25,7 @@ def get_latest_run_id(log_path: str, algo: str) -> int:
             and int(ext) > max_run_id
         ):
             max_run_id = int(ext)
-    return max_run_id
+    return max_run_id + 1
 
 
 def read_hyperparameters(algo, env):
@@ -45,7 +33,8 @@ def read_hyperparameters(algo, env):
         hyperparams_dict = yaml.safe_load(f)
         hyperparams = hyperparams_dict["common"]
         hyperparams.update(hyperparams_dict[algo])
-        hyperparams.update(hyperparams_dict[env])
+        if algo == "tqc":
+            hyperparams.update(hyperparams_dict[env])
 
     return hyperparams
 
