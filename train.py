@@ -6,7 +6,7 @@ import os
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.utils import set_random_seed
 
-from utils.utils import ALGOS, get_run_id, read_hyperparameters, make_env
+from utils.utils import ALGOS, DEVICE, get_run_id, read_hyperparameters, make_env
 
 
 def train(args, tensorboard_log, save_path, verbose):
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         args.seed = np.random.randint(2**32 - 1, dtype="int64").item()
 
     set_random_seed(args.seed)
-    print(f"Seed: {args.seed}")
+    print(f"Starting training on seed <{args.seed}> using {DEVICE}...")
 
     # Logging
     tensorboard_log = os.path.join(args.tensorboard_log, args.env)
@@ -68,5 +68,7 @@ if __name__ == "__main__":
     log_dir = f"{args.log_dir}/{args.env}"
     algo = args.algo.upper()
     save_path = os.path.join(log_dir, f"{algo}_{get_run_id(log_dir, algo)}")
+
+    print(f"log folder :{log_dir}")
 
     train(args, tensorboard_log, save_path, args.verbose)

@@ -1,17 +1,19 @@
 import gym
+import torch
 
 import yaml
 import glob
 import os
 
-from stable_baselines3 import SAC, PPO
-from sb3_contrib import TQC
+from stable_baselines3 import SAC
+from sb3_contrib import TQC, QRDQN
 from stable_baselines3.common.monitor import Monitor
 
 from utils.wrappers import RescaleAction
 
 
-ALGOS = {"sac": SAC, "tqc": TQC}
+ALGOS = {"sac": SAC, "tqc": TQC, "qrdqn": QRDQN}
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def get_run_id(log_path: str, algo: str) -> int:
