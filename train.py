@@ -69,6 +69,6 @@ if __name__ == "__main__":
     algo = args.algo.upper()
     save_path = os.path.join(log_dir, f"{algo}_{get_run_id(log_dir, algo)}")
 
-    print(f"log folder :{log_dir}")
+    print(f"Logging to {save_path}")
 
     train(args, tensorboard_log, save_path, args.verbose)

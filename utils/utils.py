@@ -8,6 +8,7 @@ import os
 from stable_baselines3 import SAC
 from sb3_contrib import TQC, QRDQN
 from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import DummyVecEnv
 
 from utils.wrappers import RescaleAction
 
