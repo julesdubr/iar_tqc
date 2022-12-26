@@ -4,37 +4,34 @@ from gym import spaces
 import numpy as np
 
 
-class MDP(gym.Env):
+class SingleStateMDP(gym.Env):
     def __init__(self):
-        super().__init__()
-        # Define action and observation spaces
         self.action_space = spaces.Box(-1, 1, shape=(1,), dtype=np.float32)
-        self.observation_space = spaces.Box(
-            -np.inf, np.inf, shape=(1,), dtype=np.float32
-        )
-        # Set MDP parameters
+        self.observation_space = spaces.Discrete(1)
+
+        self.state = 0
+
         self.A0 = 0.3
         self.A1 = 0.9
         self.nu = 5
         self.sigma = 0.25
 
-    def f(self, action):
+    def _mean_reward(self, action):
         # Calculate mean reward function
-        return (self.A0 + (self.A1 - self.A0) / 2 * (action + 1)) * np.cos(
-            self.nu * action
-        )
+        A = self.A0 + (self.A1 - self.A0) / 2 * (action + 1)
+        return A * np.cos(self.nu * action)
 
     def step(self, action):
-        f = self.f(action)
         # Generate reward with Gaussian noise
-        reward = np.random.normal(f, self.sigma)
+        reward = self._mean_reward(action) + np.random.normal(0, self.sigma)
         reward = reward.item()
-
-        return np.zeros(1), reward, False, {}
+        next_state = 0
+        return next_state, reward, False, {}
 
     def reset(self):
         # Reset state and done flag
-        return np.zeros(1)
+        self.state = 0
+        return self.state
 
     def render(self, mode="human"):
         # Print current state
