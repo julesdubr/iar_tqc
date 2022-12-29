@@ -1,5 +1,15 @@
 """
-In the following text, Q'π(a) and Z'π(a) are the approximations of the true Q-value and Z-value Qπ(a) and Zπ(a) of the action a. We describe a sum from i = 0 to kN as Σi=1->(kN).
+The task is simplistic infinite horizon MDP (S, A,P, R, p0) with only one state S = {s0} and 1-dimensional action space A = [-1, 1]. Since there is only one state, the state transition function P and initial state distribution p0 are delta functions.
+
+On each step agent get stochastic reward r(a) ~ f(a) + N (0, σ), where σ = 0.25. Mean reward function is the cosine with
+slowly increasing amplitude (Figure 8):
+
+f(a) = [ A0 + (A1 - A0) / 2 * (a + 1) ] cos νa,
+    where A0 = 0.3; A1 = 0.9; ν = 5.
+
+The discount factor is γ = 0.99.
+
+In the following, Q'π(a) and Z'π(a) are the approximations of the true Q-value and Z-value Qπ(a) and Zπ(a) of the action a. We describe a sum from i = 0 to kN as Σi=1->(kN).
 
 In the toy experiment we evaluate bias correction techniques (Table 4) in this MDP. We train Q-networks (or Z-networks, depending on the method) with two hidden layers of size 50 from scratch on the replay buffer of size 50 for 3000 iterations. We populate the buffer by sampling a reward once for each action from a uniform action grid of size 50. At each step of temporal difference learning, we use a policy, which is greedy with respect to the objective in Table 4.
 
@@ -9,7 +19,7 @@ For AVG and MIN we vary the number of networks N from [3, 5, 10, 20, 50] and [2,
 
 To prevent interference of policy optimization subtleties into conclusions about Q-function approximation quality, we use implicit deterministic policy induced by value networks: the argmax of the approximation. To find the maximum, we evaluated the approximation over the dense uniform grid in the range [-1, 1] with a step ∆a = 0.001.
 
-Each dataset consists of uniform grid of actions and sampled corresponding rewards. For each method we average results over several datasets and evaluate on different dataset sizes. In this way current policy defined implicitly as greedy one with respect to value function. This
+Each dataset consists of uniform grid of actions and sampled corresponding rewards. For each method we average results over several datasets and evaluate on different dataset sizes. In this way current policy defined implicitly as greedy one with respect to value function. This policy doesn’t interact with the environment instead actions predefined to be uniform.
 """
 
 import gym
