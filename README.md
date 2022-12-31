@@ -8,7 +8,7 @@
     - <https://github.com/bayesgroup/tqc_pytorch>
 
 
-# Plan d'action
+# Summary
 
 The bias of overestimation is one of the main obstacles to the accuracy of off-policy learning methods. Indeed, approximation errors are retro-propagated and accumulate during the learning process.
 
