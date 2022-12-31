@@ -122,6 +122,8 @@ def train_q_network(
             else:
                 q_values = bias_correction_fn(q_networks)(state)
 
+            print(q_values)
+
             # get the estimated q_value and compute the loss
             q_value = q_values[0][action]
             loss = loss_fn(q_value, reward)
