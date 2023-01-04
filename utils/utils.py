@@ -13,13 +13,16 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from utils.wrappers import RescaleAction
 
 
-ALGOS = {"sac": SAC, "tqc": TQC, "qrdqn": QRDQN}
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+ALGOS = {"sac": SAC, "tqc": TQC, "qrdqn": QRDQN}
+
 custom_params = {
     "axes.grid": True,
     "axes.spines.right": False,
     "axes.spines.top": False,
 }
+
 
 def get_run_id(log_path: str, algo: str) -> int:
     max_run_id = 0
