@@ -25,8 +25,8 @@ class SingleStateMDP(gym.Env):
             self.rng = np.random.default_rng()
 
     def _mean_reward(self, action):
-        A = self.A0 + (self.A1 - self.A0) / 2 * (action + 1)
-        return A * np.cos(self.nu * action)
+        A = self.A0 + (self.A1 - self.A0) * (action + 1) * 0.5
+        return A * np.sin(self.nu * action)
 
     def step(self, action):
         reward = self._mean_reward(action) + self.rng.normal(0, self.sigma)
@@ -56,15 +56,14 @@ def plot_mdp_reward(n, env, savefig=False):
         rewards[i] = reward
 
     # Plot the reward function
-    sns.set_theme(style="ticks", palette="tab10", rc=custom_params)
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(actions, targets, color="r", linewidth=3, label="$f(a)$")
+    ax.scatter(actions, rewards, label="samples from $R(a)$")
 
-    plt.plot(actions, targets, color="r", linewidth=3, label="$f(a)$")
-    plt.scatter(actions, rewards, label="samples from $R(a)$")
-
-    plt.ylim(ymin=-2)
-    plt.legend()
+    ax.set_ylim(ymin=-2)
+    ax.legend()
 
     if savefig:
-        plt.savefig("plots/reward_function")
+        fig.savefig("plots/reward_function")
 
     plt.show()
