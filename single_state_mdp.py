@@ -40,30 +40,3 @@ class SingleStateMDP(gym.Env):
 
     def render(self, mode="human"):
         pass
-
-
-def plot_mdp_reward(n, env, savefig=False):
-    actions = np.linspace(-1, 1, n)
-    rewards = np.zeros(n)
-    targets = np.zeros(n)
-
-    # Build the reward function
-    env.reset()
-    for i, action in enumerate(actions):
-        a = action.item()
-        _, reward, _, _ = env.step(a)
-        targets[i] = env._mean_reward(a)
-        rewards[i] = reward
-
-    # Plot the reward function
-    fig, ax = plt.subplots(figsize=(8, 4))
-    ax.plot(actions, targets, color="r", linewidth=3, label="$f(a)$")
-    ax.scatter(actions, rewards, label="samples from $R(a)$")
-
-    ax.set_ylim(ymin=-2)
-    ax.legend()
-
-    if savefig:
-        fig.savefig("plots/reward_function")
-
-    plt.show()
