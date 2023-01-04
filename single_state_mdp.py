@@ -2,10 +2,6 @@ import gym
 import numpy as np
 from gym import spaces
 
-import seaborn as sns
-import matplotlib.pyplot as plt
-from utils.utils import custom_params
-
 
 class SingleStateMDP(gym.Env):
     def __init__(self, A0=0.3, A1=0.9, nu=5, sigma=0.25, seed=None):
