@@ -16,7 +16,7 @@ def train(args, tensorboard_log, save_path, verbose):
     eval_env = make_env(args.env, args.seed, eval_env=True)
 
     # Setup model
-    hyperparams = read_hyperparameters(args.algo, args.env)
+    hyperparams = read_hyperparameters(args.algo, args.env, args.hyperparams)
 
     model = ALGOS[args.algo](
         env=env,
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--log-dir", default="logs", type=str)
     parser.add_argument("-tb", "--tensorboard-log", default="logs", type=str)
     parser.add_argument("--seed", default=-1, type=int)
+    parser.add_argument("--hyperparams", default="mujoco", type=str)
     parser.add_argument("--verbose", default=0, type=int)
     args = parser.parse_args()
 

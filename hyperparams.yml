@@ -1,10 +1,6 @@
 # Common hyperparameters to both TQC and SAC
 common:
   policy: "MlpPolicy"
-  learning_rate: !!float 3e-4
-  gamma: 0.99
-  tau: 0.005
-  buffer_size: 1000000
 
 # Algorithm dependent hyperparameters
 tqc:

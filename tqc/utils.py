@@ -34,12 +34,13 @@ def get_run_id(log_path: str, algo: str) -> int:
     return max_run_id + 1
 
 
-def read_hyperparameters(algo, env):
-    with open("hyperparams.yml", "r") as f:
+def read_hyperparameters(algo, env, filename):
+    with open(f"hyperparams/{filename}.yml", "r") as f:
         hyperparams_dict = yaml.safe_load(f)
         hyperparams = hyperparams_dict["common"]
         hyperparams.update(hyperparams_dict[algo])
-        if algo == "tqc":
+
+        if env in hyperparams_dict:
             hyperparams.update(hyperparams_dict[env])
 
     return hyperparams
