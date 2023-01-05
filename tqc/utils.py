@@ -1,5 +1,4 @@
 import gym
-import torch
 
 import yaml
 import glob
@@ -9,10 +8,8 @@ from stable_baselines3 import SAC
 from sb3_contrib import TQC
 from stable_baselines3.common.monitor import Monitor
 
-from utils.wrappers import RescaleAction
+from tqc.structures import RescaleAction
 
-
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 ALGOS = {"sac": SAC, "tqc": TQC}
 

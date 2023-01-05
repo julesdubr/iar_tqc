@@ -6,7 +6,8 @@ import os
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.utils import set_random_seed
 
-from utils.utils import ALGOS, DEVICE, get_run_id, read_hyperparameters, make_env
+from tqc import DEVICE
+from tqc.utils import ALGOS, get_run_id, read_hyperparameters, make_env
 
 
 def train(args, tensorboard_log, save_path, verbose):
