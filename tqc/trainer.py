@@ -15,18 +15,14 @@ class Trainer:
         gamma=0.99,
         quantiles_to_drop=0,
         bias_correction_method="TQC",
-        target_entropy=-1,
     ):
         self.critic = critic
         self.gamma = gamma
-        self.log_alpha = torch.zeros((1,), requires_grad=True, device=DEVICE)
 
         self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=3e-4)
-        self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=3e-4)
 
         self.quantiles_to_drop = quantiles_to_drop * self.critic.n_nets
         self.quantiles_total = critic.n_quantiles * critic.n_nets
-        self.target_entropy = target_entropy
 
         self.bias_correction_method = bias_correction_method
 
@@ -45,44 +41,35 @@ class Trainer:
                 with torch.no_grad():
                     q_values = cur_q.mean(dim=1)
 
-                    q_max = q_values.max()
-                    next_q = torch.ones(cur_q.shape) * q_max
+                    next_q = torch.ones(cur_q.shape) * q_values.max()
 
                     # Compute the critic target using the the max Q-value in respect
                     # to the greedy policy objective
                     rewards_repeated = reward.unsqueeze(1).repeat(1, cur_q.shape[1], 1)
-                    target = rewards_repeated + self.gamma * next_q * (1 - alpha)
+                    target = rewards_repeated + self.gamma * next_q
 
                 critic_loss = F.mse_loss(cur_q, target)
 
-                alpha_loss = (
-                    -self.log_alpha * (q_max + self.target_entropy).detach().mean()
-                )
-
             elif self.bias_correction_method == "MIN":
                 # Approximate the value for each action of the replay buffer
-                # by taking the average of the N Q-networks
+                # by taking the minimum of the N Q-networks
                 cur_q = self.critic(state, action)
 
                 with torch.no_grad():
                     q_values, _ = cur_q.min(dim=1)
 
-                    q_max = q_values.max()
-                    next_q = torch.ones(cur_q.shape) * q_max
+                    next_q = torch.ones(cur_q.shape) * q_values.max()
 
                     # Compute the critic target using the the max Q-value in respect
                     # to the greedy policy objective
                     rewards_repeated = reward.unsqueeze(1).repeat(1, cur_q.shape[1], 1)
-                    target = rewards_repeated + self.gamma * next_q * (1 - alpha)
+                    target = rewards_repeated + self.gamma * next_q
 
                 critic_loss = F.mse_loss(cur_q, target)
 
-                alpha_loss = (
-                    -self.log_alpha * (q_max + self.target_entropy).detach().mean()
-                )
-
             elif self.bias_correction_method == "TQC":
-                # Calculate the loss using the TQC bias correction method
+                # Approximate the value for each action of the replay buffer
+                # by using the TQC bias correction method
                 cur_z = self.critic(state, action)
 
                 with torch.no_grad():
@@ -95,16 +82,9 @@ class Trainer:
                         :, : self.quantiles_total - self.quantiles_to_drop
                     ]
 
-                    target = reward + self.gamma * (
-                        sorted_z_part - alpha * next_z.mean(dim=(1, 2)).max()
-                    )
+                    target = reward + self.gamma * sorted_z_part
 
                 critic_loss = quantile_huber_loss_f(cur_z, target)
-
-                alpha_loss = (
-                    -self.log_alpha
-                    * (z_values.max() + self.target_entropy).detach().mean()
-                )
 
             if verbose:
                 print(f"[{i}] loss: {critic_loss}")
@@ -112,10 +92,6 @@ class Trainer:
             self.critic_optimizer.zero_grad()
             critic_loss.backward()
             self.critic_optimizer.step()
-
-            self.alpha_optimizer.zero_grad()
-            alpha_loss.backward()
-            self.alpha_optimizer.step()
 
     def evaluate(self, env, replay_buffer, verbose=0):
         state, action, reward = replay_buffer.sample(2000, mode="order")
