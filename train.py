@@ -29,8 +29,8 @@ def train(args, tensorboard_log, save_path, verbose):
     eval_callback = EvalCallback(
         eval_env,
         best_model_save_path=save_path,
-        n_eval_episodes=10,
         log_path=save_path,
+        n_eval_episodes=10,
         eval_freq=int(args.eval_freq),
         deterministic=True,
         verbose=verbose,
